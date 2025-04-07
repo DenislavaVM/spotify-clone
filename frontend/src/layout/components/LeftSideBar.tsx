@@ -13,7 +13,7 @@ const LeftSideBar = () => {
 
     useEffect(() => {
         fetchAlbums();
-    }, []);
+    }, [fetchAlbums]);
 
     return (
         <div className="h-full flex flex-col gap-2">
@@ -61,11 +61,14 @@ const LeftSideBar = () => {
                             <PlaylistSkeleton />
                         ) : (
                             albums.map((album) => (
-                                <Link to={`${album._id}`}
+                                <Link
+                                    to={`/albums/${album._id}`}
                                     key={album._id}
                                     className="p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer"
                                 >
-                                    <img src={album.imageUrl} alt="Playlist image"
+                                    <img
+                                        src={album.imageUrl}
+                                        alt="Playlist image"
                                         className="size-12 rounded-md flex-shrink-0 object-cover"
                                     />
                                     <div className="flex-1 min-w-0 hidden md:block">
