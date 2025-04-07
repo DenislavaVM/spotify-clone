@@ -46,7 +46,7 @@ const seedDatabase = async () => {
                 imageUrl: "/cover-images/4.jpg",
                 audioUrl: "/songs/4.mp3",
                 plays: Math.floor(Math.random() * 5000),
-                duration: 24
+                duration: 28
             },
             {
                 title: "Stay",
@@ -73,7 +73,7 @@ const seedDatabase = async () => {
                 imageUrl: "/cover-images/7.jpg",
                 audioUrl: "/songs/7.mp3",
                 plays: Math.floor(Math.random() * 5000),
-                duration: 39
+                duration: 42
             },
             {
                 title: "Watermelon Sugar",
@@ -136,7 +136,7 @@ const seedDatabase = async () => {
                 imageUrl: "/cover-images/14.jpg",
                 audioUrl: "/songs/14.mp3",
                 plays: Math.floor(Math.random() * 5000),
-                duration: 27
+                duration: 29
             },
             {
                 title: "Sunflower",
@@ -154,7 +154,7 @@ const seedDatabase = async () => {
                 imageUrl: "/cover-images/16.jpg",
                 audioUrl: "/songs/16.mp3",
                 plays: Math.floor(Math.random() * 5000),
-                duration: 39
+                duration: 40
             },
             {
                 title: "Circles",
@@ -208,6 +208,7 @@ const seedDatabase = async () => {
         ];
 
         const createdAlbums = await Album.insertMany(albums);
+
         for (let i = 0; i < createdAlbums.length; i++) {
             const album = createdAlbums[i];
             const albumSongs = albums[i].songs;
