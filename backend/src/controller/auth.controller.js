@@ -8,8 +8,8 @@ export const authCallback = async (req, res, next) => {
         if (!user) {
             await User.create({
                 clerkId: id,
-                fullName: `${firstName} ${lastName}`,
-                imageUrl
+                fullName: `${firstName || ""} ${lastName || ""}`.trim(),
+                imageUrl,
             });
         }
 
