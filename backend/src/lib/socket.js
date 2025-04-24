@@ -43,7 +43,7 @@ export const initializeSocket = (server) => {
                     io.to(receiverSocketId).emit("receive_message", message);
                 }
 
-                socket.emit("message_sent", message);
+                socket.emit("receive_message", message);
             } catch (error) {
                 console.error("Message error:", error);
                 socket.emit("message_error", error.message);
