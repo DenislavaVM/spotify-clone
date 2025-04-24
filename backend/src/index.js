@@ -49,14 +49,24 @@ cron.schedule("0 * * * *", () => {
     if (fs.existsSync(tempDir)) {
         fs.readdir(tempDir, (err, files) => {
             if (err) {
-                console.log("error", err);
+                console.error("Error reading temp directory:", err);
                 return;
-            };
+            }
+
+            let deleted = 0;
+
             for (const file of files) {
-                fs.unlink(path.join(tempDir, file), (err) => { });
-            };
+                try {
+                    fs.unlinkSync(path.join(tempDir, file));
+                    deleted++;
+                } catch (err) {
+                    console.error("Error deleting file:", file, err);
+                }
+            }
+
+            console.log(`[CLEANUP] Deleted ${deleted} temp file(s) at ${new Date().toISOString()}`);
         });
-    };
+    }
 });
 
 app.use("/api/users", userRoutes);
