@@ -28,7 +28,7 @@ const AddSongDialog = () => {
     const [songDialogOpen, setSongDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [newSong, setNewSong] = useState({
+    const [newSong, setNewSong] = useState<NewSong>({
         title: "",
         artist: "",
         album: "",
