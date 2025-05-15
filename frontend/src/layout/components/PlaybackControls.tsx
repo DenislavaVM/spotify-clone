@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Laptop2, ListMusic, Mic2, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume1 } from "lucide-react";
+import { Laptop2, ListMusic, Mic2, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume1, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const formatTime = (seconds: number) => {
@@ -11,7 +11,7 @@ const formatTime = (seconds: number) => {
 };
 
 const PlaybackControls = () => {
-    const { currentSong, isPlaying, togglePlay, playNext, playPrevious } = usePlayerStore();
+    const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering } = usePlayerStore();
 
     const [volume, setVolume] = useState(75);
     const [currentTime, setCurrentTime] = useState(0);
@@ -98,7 +98,13 @@ const PlaybackControls = () => {
                             onClick={togglePlay}
                             disabled={!currentSong}
                         >
-                            {isPlaying ? <Pause className='h-5 w-5' /> : <Play className='h-5 w-5' />}
+                            {isBuffering ? (
+                                <Loader2 className='h-5 w-5 animate-spin' />
+                            ) : isPlaying ? (
+                                <Pause className='h-5 w-5' />
+                            ) : (
+                                <Play className='h-5 w-5' />
+                            )}
                         </Button>
                         <Button
                             size='icon'

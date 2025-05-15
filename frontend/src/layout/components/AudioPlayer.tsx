@@ -5,7 +5,7 @@ const AudioPlayer = () => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const prevSongRef = useRef<string | null>(null);
 
-    const { currentSong, isPlaying, playNext } = usePlayerStore();
+    const { currentSong, isPlaying, playNext, setIsBuffering } = usePlayerStore();
 
     useEffect(() => {
         if (isPlaying) {
@@ -46,6 +46,21 @@ const AudioPlayer = () => {
         };
 
     }, [currentSong, isPlaying]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+
+        const handleWaiting = () => setIsBuffering(true);
+        const handlePlaying = () => setIsBuffering(false);
+
+        audio?.addEventListener("waiting", handleWaiting);
+        audio?.addEventListener("playing", handlePlaying);
+
+        return () => {
+            audio?.removeEventListener("waiting", handleWaiting);
+            audio?.removeEventListener("playing", handlePlaying);
+        };
+    }, [setIsBuffering]);
 
     return (
         <audio ref={audioRef} />

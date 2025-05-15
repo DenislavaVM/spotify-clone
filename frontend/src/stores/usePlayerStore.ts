@@ -8,6 +8,7 @@ interface PlayerStore {
     isPlaying: boolean;
     queue: Song[];
     currentIndex: number;
+    isBuffering: boolean;
 
     initializeQueue: (songs: Song[]) => void;
     playAlbum: (songs: Song[], startIndex?: number) => void;
@@ -15,6 +16,7 @@ interface PlayerStore {
     togglePlay: () => void;
     playNext: () => void;
     playPrevious: () => void;
+    setIsBuffering: (value: boolean) => void;
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -22,6 +24,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     isPlaying: false,
     queue: [],
     currentIndex: -1,
+    isBuffering: false,
+    setIsBuffering: (value) => set({ isBuffering: value }),
 
     initializeQueue: (songs: Song[]) => {
         set({
