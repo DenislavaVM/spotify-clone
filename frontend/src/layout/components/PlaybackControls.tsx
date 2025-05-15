@@ -13,7 +13,10 @@ const formatTime = (seconds: number) => {
 const PlaybackControls = () => {
     const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering } = usePlayerStore();
 
-    const [volume, setVolume] = useState(75);
+    const [volume, setVolume] = useState(() => {
+        const storedVolume = localStorage.getItem("player_volume");
+        return storedVolume ? Number(storedVolume) : 75;
+    });
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -42,6 +45,13 @@ const PlaybackControls = () => {
             audio.removeEventListener("ended", handleEnded);
         };
     }, [currentSong]);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume / 100;
+        }
+        localStorage.setItem("player_volume", String(volume));
+    }, [volume]);
 
     const handleSeek = (value: number[]) => {
         if (audioRef.current) {
