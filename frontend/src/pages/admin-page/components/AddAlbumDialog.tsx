@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/lib/axios";
+import { apiPost } from "@/lib/api";
 import { Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -37,36 +38,28 @@ const AddAlbumDialog = () => {
     const handleSubmit = async () => {
         setIsLoading(true);
 
-        try {
-            if (!imageFile) {
-                return toast.error("Please upload an image");
-            }
+        if (!imageFile) {
+            return toast.error("Please upload an image");
+        }
 
-            const formData = new FormData();
-            formData.append("title", newAlbum.title);
-            formData.append("artist", newAlbum.artist);
-            formData.append("releaseYear", newAlbum.releaseYear.toString());
-            formData.append("imageFile", imageFile);
+        const formData = new FormData();
+        formData.append("title", newAlbum.title);
+        formData.append("artist", newAlbum.artist);
+        formData.append("releaseYear", newAlbum.releaseYear.toString());
+        formData.append("imageFile", imageFile);
 
-            await axiosInstance.post("/admin/albums", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+        const [_, error] = await apiPost("/admin/albums", formData);
 
-            setNewAlbum({
-                title: "",
-                artist: "",
-                releaseYear: new Date().getFullYear(),
-            });
+        if (!error) {
+            toast.success("Album created successfully");
+            setNewAlbum({ title: "", artist: "", releaseYear: new Date().getFullYear() });
             setImageFile(null);
             setAlbumDialogOpen(false);
-            toast.success("Album created successfully");
-        } catch (error: any) {
-            toast.error("Failed to create album: " + error.message);
-        } finally {
-            setIsLoading(false);
+        } else {
+            toast.error("Failed to create album: " + error);
         }
+
+        setIsLoading(false);
     };
 
     return (
