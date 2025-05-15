@@ -45,31 +45,36 @@ export const useMusicStore = create<MusicStore>((set) => ({
   deleteSong: async (id) => {
     set({ isLoading: true, error: null });
     const [_, error] = await apiDelete(`/admin/songs/${id}`);
-    if (error) {
-      toast.error("Error deleting song: " + error);
-    } else {
-      set(state => ({
-        songs: state.songs.filter(song => song._id !== id),
+
+    if (!error) {
+      set((state) => ({
+        songs: state.songs.filter((song) => song._id !== id),
       }));
       toast.success("Song deleted successfully");
+    } else {
+      toast.error("Error deleting song: " + error);
     }
     set({ isLoading: false });
   },
 
   deleteAlbum: async (id) => {
     set({ isLoading: true, error: null });
-    try {
-      await axiosInstance.delete(`/admin/albums/${id}`);
-      set(state => ({
+
+    const [_, error] = await apiDelete(`/admin/albums/${id}`);
+
+    if (!error) {
+      set((state) => ({
         albums: state.albums.filter((album) => album._id !== id),
-        songs: state.songs.map((song) => song.albumId === state.albums.find((a) => a._id === id)?.title ? { ...song, album: null } : song),
+        songs: state.songs.map((song) =>
+          song.albumId === id ? { ...song, album: null } : song
+        ),
       }));
       toast.success("Album deleted successfully");
-    } catch (error: any) {
-      toast.error("Failed to delete album:" + error.message);
-    } finally {
-      set({ isLoading: false });
+    } else {
+      toast.error("Failed to delete album: " + error);
     }
+
+    set({ isLoading: false });
   },
 
   fetchSongs: async () => {
