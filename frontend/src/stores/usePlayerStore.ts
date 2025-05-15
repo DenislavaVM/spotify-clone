@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Song } from "@/types";
+import { trackActivity } from "@/lib/trackActivity";
 import { useChatStore } from "./useChatStore";
 
 interface PlayerStore {
@@ -36,14 +37,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         };
 
         const song = songs[startIndex];
-        const socket = useChatStore.getState().socket;
-
-        if (socket.auth) {
-            socket.emit("update_activity", {
-                userId: socket.auth.userId,
-                activity: `Playing ${song.title} by ${song.artist}`
-            });
-        };
+        trackActivity(song);
 
         set({
             queue: songs,
@@ -59,14 +53,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         };
 
         const songIndex = get().queue.findIndex((s) => s._id === song._id);
-        const socket = useChatStore.getState().socket;
-
-        if (socket.auth) {
-            socket.emit("update_activity", {
-                userId: socket.auth.userId,
-                activity: `Playing ${song.title} by ${song.artist}`
-            });
-        };
+        trackActivity(song);
 
         set({
             currentSong: song,
@@ -76,16 +63,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     },
 
     togglePlay: () => {
-        const willStartPlaying = !get().isPlaying;
-        const currentSong = get().currentSong;
-        const socket = useChatStore.getState().socket;
+        const { isPlaying, currentSong } = get();
+        const willStartPlaying = !isPlaying;
 
-        if (socket.auth) {
-            socket.emit("update_activity", {
-                userId: socket.auth.userId,
-                activity: willStartPlaying && currentSong ? `Playing ${currentSong.title} by ${currentSong.albumId}` : "Idle",
-            });
-        };
+        trackActivity(willStartPlaying ? currentSong : null, !willStartPlaying);
 
         set({
             isPlaying: willStartPlaying,
@@ -98,15 +79,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
         if (nextIndex < queue.length) {
             const nextSong = queue[nextIndex];
-            const socket = useChatStore.getState().socket;
-
-            if (socket.auth) {
-                socket.emit("update_activity", {
-                    userId: socket.auth.userId,
-                    activity: `Playing ${nextSong.title} by ${nextSong.artist}`
-                });
-            };
-
+            trackActivity(nextSong);
 
             set({
                 currentSong: nextSong,
@@ -114,15 +87,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
                 isPlaying: true,
             });
         } else {
+            trackActivity(null, true);
             set({ isPlaying: false });
-            const socket = useChatStore.getState().socket;
-
-            if (socket.auth) {
-                socket.emit("update_activity", {
-                    userId: socket.auth.userId,
-                    activity: `Idle`,
-                });
-            };
         };
     },
 
@@ -132,14 +98,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
         if (prevIndex >= 0) {
             const prevSong = queue[prevIndex];
-            const socket = useChatStore.getState().socket;
-
-            if (socket.auth) {
-                socket.emit("update_activity", {
-                    userId: socket.auth.userId,
-                    activity: `Playing ${prevSong.title} by ${prevSong.artist}`
-                });
-            };
+            trackActivity(prevSong);
 
             set({
                 currentSong: prevSong,
@@ -147,15 +106,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
                 isPlaying: true,
             });
         } else {
+            trackActivity(null, true);
             set({ isPlaying: false });
-            const socket = useChatStore.getState().socket;
-
-            if (socket.auth) {
-                socket.emit("update_activity", {
-                    userId: socket.auth.userId,
-                    activity: `Idle`,
-                });
-            };
         }
     },
 }));
