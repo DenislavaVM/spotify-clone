@@ -12,7 +12,10 @@ const formatTime = (seconds: number) => {
 
 const PlaybackControls = () => {
     const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering } = usePlayerStore();
-    const [isMuted, setIsMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(() => {
+        const storedMuted = localStorage.getItem("player_muted");
+        return storedMuted ? storedMuted === "true" : false;
+    });
     const [volume, setVolume] = useState(() => {
         const storedVolume = localStorage.getItem("player_volume");
         return storedVolume ? Number(storedVolume) : 75;
@@ -59,6 +62,10 @@ const PlaybackControls = () => {
         }
         localStorage.setItem("player_volume", String(volume));
     }, [volume, isMuted]);
+
+    useEffect(() => {
+        localStorage.setItem("player_muted", String(isMuted));
+    }, [isMuted]);
 
     const handleSeek = (value: number[]) => {
         if (audioRef.current) {
