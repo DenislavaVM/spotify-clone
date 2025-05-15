@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import logger from "../lib/logger.js";
 
 export const authCallback = async (req, res, next) => {
     try {
@@ -12,10 +13,9 @@ export const authCallback = async (req, res, next) => {
                 imageUrl,
             });
         }
-
         res.status(200).json({ success: true });
     } catch (error) {
-        console.log("Error in auth callback", error);
+        logger.error("Error in auth callback", error);
         next(error);
     }
 };

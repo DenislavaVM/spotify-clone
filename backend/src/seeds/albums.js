@@ -216,9 +216,9 @@ const seedDatabase = async () => {
             await Song.updateMany({ _id: { $in: albumSongs } }, { albumId: album._id });
         }
 
-        console.log("Database seeded successfully!");
+        logger.info("Database seeded successfully!");
     } catch (error) {
-        console.error("Error seeding database:", error);
+        logger.error("Error seeding database", error);
     } finally {
         mongoose.connection.close();
     }

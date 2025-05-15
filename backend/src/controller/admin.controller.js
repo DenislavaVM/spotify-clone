@@ -1,4 +1,5 @@
 import cloudinary from "../lib/cloudinary.js";
+import logger from "../lib/logger.js";
 import { Album } from "../models/album.model.js";
 import { Song } from "../models/song.model.js";
 
@@ -13,7 +14,7 @@ const uploadToCloudinary = async (file) => {
         });
         return result.secure_url
     } catch (error) {
-        console.log("Error in uploadToCloudinary", error);
+        logger.error("Error in uploadToCloudinary", error);
         throw new Error("Error uploading to cloudinary");
     }
 };
@@ -50,7 +51,7 @@ export const createSong = async (req, res, next) => {
 
         res.status(201).json(song);
     } catch (error) {
-        console.log("Error in createSong", error);
+        logger.error("Error in createSong", error);
         res.status(500).json({ message: "Internal server error", error });
         next(error);
     }
@@ -70,7 +71,7 @@ export const deleteSong = async (req, res, next) => {
         await Song.findByIdAndDelete(id);
         res.status(200).json({ message: "Song deleted successfully" });
     } catch (error) {
-        console.log("Error in deleteSong", error);
+        logger.error("Error in deleteSong", error);
         next(error);
     }
 };
@@ -92,7 +93,7 @@ export const createAlbum = async (req, res, next) => {
         res.status(201).json(album);
 
     } catch (error) {
-        console.log("Error in createAlbum", error);
+        logger.error("Error in createAlbum", error);
         next(error);
     }
 };
@@ -105,7 +106,7 @@ export const deleteAlbum = async (req, res, next) => {
         res.status(200).json({ message: "Album deleted successfully" });
 
     } catch (error) {
-        console.log("Error in deleteAlbum", error);
+        logger.error("Error in deleteAlbum", error);
         next(error);
     }
 };

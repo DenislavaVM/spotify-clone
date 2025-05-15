@@ -1,3 +1,4 @@
+import logger from "./logger.js";
 import { Server } from "socket.io";
 import { Message } from "../models/message.model.js";
 
@@ -23,7 +24,7 @@ export const initializeSocket = (server) => {
         });
 
         socket.on("update_activity", ({ userId, activity }) => {
-            console.log("activity updated", userId, activity);
+            logger.info(`Activity updated: ${userId} - ${activity}`);
             userActivities.set(userId, activity);
             io.emit("activity_updated", { userId, activity });
         });
@@ -45,7 +46,7 @@ export const initializeSocket = (server) => {
 
                 socket.emit("receive_message", message);
             } catch (error) {
-                console.error("Message error:", error);
+                logger.error("Message error", error);
                 socket.emit("message_error", error.message);
             }
         });
