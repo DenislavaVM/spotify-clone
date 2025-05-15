@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { Message, User } from "@/types";
 import { create } from "zustand";
 import { io } from "socket.io-client";
+import { apiGet } from "@/lib/api";
 
 interface ChatStore {
     users: User[];
@@ -45,14 +46,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     fetchUsers: async () => {
         set({ isLoading: true, error: null });
-        try {
-            const response = await axiosInstance.get("/users");
-            set({ users: response.data })
-        } catch (error: any) {
-            set({ error: error.response?.data?.message || "An error occurred" });
-        } finally {
-            set({ isLoading: false });
-        }
+        const [data, error] = await apiGet<User[]>("/users");
+        if (data) {
+            set({ users: data });
+        };
+
+        if (error) {
+            set({ error });
+        };
+
+        set({ isLoading: false });
     },
 
     initSocket: (userId) => {
@@ -125,13 +128,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     fetchMessages: async (userId: string) => {
         set({ isLoading: true, error: null });
-        try {
-            const response = await axiosInstance.get(`/users/messages/${userId}`);
-            set({ messages: response.data });
-        } catch (error: any) {
-            set({ error: error.response.data.message });
-        } finally {
-            set({ isLoading: false });
+        const [data, error] = await apiGet<Message[]>(`/users/messages/${userId}`);
+
+        if (data) {
+            set({ messages: data });
         };
+
+        if (error) {
+            set({ error });
+        };
+
+        set({ isLoading: false });
     },
 }));

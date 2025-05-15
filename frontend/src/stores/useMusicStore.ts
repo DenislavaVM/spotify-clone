@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import { Album, Song, Stats } from "@/types";
+import { apiGet, apiDelete } from "@/lib/api";
 import toast from "react-hot-toast";
 import { create } from "zustand";
 
@@ -43,18 +44,16 @@ export const useMusicStore = create<MusicStore>((set) => ({
 
   deleteSong: async (id) => {
     set({ isLoading: true, error: null });
-    try {
-      await axiosInstance.delete(`/admin/songs/${id}`);
+    const [_, error] = await apiDelete(`/admin/songs/${id}`);
+    if (error) {
+      toast.error("Error deleting song: " + error);
+    } else {
       set(state => ({
-        songs: state.songs.filter(song => song._id !== id)
+        songs: state.songs.filter(song => song._id !== id),
       }));
       toast.success("Song deleted successfully");
-    } catch (error: any) {
-      console.log("Error in deleteSong", error);
-      toast.error("Error deleting song");
-    } finally {
-      set({ isLoading: false });
     }
+    set({ isLoading: false });
   },
 
   deleteAlbum: async (id) => {
@@ -75,90 +74,105 @@ export const useMusicStore = create<MusicStore>((set) => ({
 
   fetchSongs: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get("/songs");
-      set({ songs: response.data });
-    } catch (error: any) {
-      set({ error: error.message });
-    } finally {
-      set({ isLoading: false });
-    }
+    const [data, error] = await apiGet<Song[]>("/songs");
+
+    if (data) {
+      set({ songs: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchStats: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get("/stats");
-      set({ stats: response.data });
-    } catch (error: any) {
-      set({ error: error.message });
-    } finally {
-      set({ isLoading: false });
-    }
+    const [data, error] = await apiGet<Stats>("/stats");
+
+    if (data) {
+      set({ stats: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchAlbums: async () => {
-    set({
-      isLoading: true,
-      error: null,
-    });
+    set({ isLoading: true, error: null });
+    const [data, error] = await apiGet<Album[]>("/albums");
 
-    try {
-      const response = await axiosInstance.get("/albums");
-      set({ albums: response.data });
-    } catch (error: any) {
-      set({ error: error.response?.data?.message || "An unexpected error occurred" });
-    } finally {
-      set({ isLoading: false });
-    }
+    if (data) {
+      set({ albums: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchAlbumById: async (id) => {
     set({ isLoading: true, error: null, currentAlbum: null });
-    try {
-      const response = await axiosInstance.get(`/albums/${id}`);
-      set({ currentAlbum: response.data });
-    } catch (error: any) {
-      set({ error: error.response?.data?.message || "An unexpected error occurred" });
-    } finally {
-      set({ isLoading: false });
-    }
+    const [data, error] = await apiGet<Album>(`/albums/${id}`);
+
+    if (data) {
+      set({ currentAlbum: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchFeaturedSongs: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get("/songs/featured");
-      set({ featuredSongs: response.data });
-    } catch (error: any) {
-      console.error("Error fetching featured songs:", error);
-      set({ error: error.response?.data?.message || "An unexpected error occurred" });
-    } finally {
-      set({ isLoading: false });
-    }
+    const [data, error] = await apiGet<Song[]>("/songs/featured");
+
+    if (data) {
+      set({ featuredSongs: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchMadeForYouSongs: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get("/songs/made-for-you");
-      set({ madeForYouSongs: response.data });
-    } catch (error: any) {
-      set({ error: error.response?.data?.message || "An unexpected error occurred" });
-    } finally {
-      set({ isLoading: false });
-    }
+    const [data, error] = await apiGet<Song[]>("/songs/made-for-you");
+
+    if (data) {
+      set({ madeForYouSongs: data });
+    };
+
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 
   fetchTrendingSongs: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get("/songs/trending");
-      set({ trendingSongs: response.data });
-    } catch (error: any) {
-      set({ error: error.response?.data?.message || "An unexpected error occurred" });
-    } finally {
-      set({ isLoading: false });
+    const [data, error] = await apiGet<Song[]>("/songs/trending");
+
+    if (data) {
+      set({ trendingSongs: data });
     }
+    if (error) {
+      set({ error });
+    };
+
+    set({ isLoading: false });
   },
 }));
