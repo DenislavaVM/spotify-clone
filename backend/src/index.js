@@ -17,8 +17,10 @@ import { connectDB } from "./lib/db.js";
 import { createServer } from "http";
 import { initializeSocket } from "./lib/socket.js";
 
-dotenv.config();
+import { errorHandler } from "./middleware/errorHandler.js";
+import logger from "./lib/logger.js";
 
+dotenv.config();
 const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT;
@@ -64,7 +66,7 @@ cron.schedule("0 * * * *", () => {
                 }
             }
 
-            console.log(`[CLEANUP] Deleted ${deleted} temp file(s) at ${new Date().toISOString()}`);
+            logger.info(`[CLEANUP] Deleted ${deleted} temp file(s) at ${new Date().toISOString()}`);
         });
     }
 });
@@ -77,17 +79,21 @@ app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+    const frontendPath = path.join(__dirname, "../frontend/dist");
+
+    app.use(express.static(frontendPath));
+
     app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "../frontend", "dist", "index.html"));
+        res.sendFile(path.join(frontendPath, "index.html"));
     });
 }
 
-app.use((err, req, res, next) => {
-    res.status(500).json({ message: process.env.NODE_ENV === "production" ? "Internal server error" : err.message });
-});
+app.use(errorHandler);
 
 httpServer.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    connectDB();
+    logger.info(`Server is running on port ${PORT}`);
+    connectDB().catch((err) => {
+        logger.error("MongoDB connection error", err);
+        process.exit(1);
+    });
 });
