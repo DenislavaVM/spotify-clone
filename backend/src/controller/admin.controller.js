@@ -1,7 +1,22 @@
+import mongoose from "mongoose";
 import cloudinary from "../lib/cloudinary.js";
 import logger from "../lib/logger.js";
+import Joi from "joi";
 import { Album } from "../models/album.model.js";
 import { Song } from "../models/song.model.js";
+
+const songSchema = Joi.object({
+    title: Joi.string().min(1).max(100).required(),
+    artist: Joi.string().min(1).max(100).required(),
+    albumId: Joi.string().allow(null, '').optional(),
+    duration: Joi.number().min(1).required(),
+});
+
+const albumSchema = Joi.object({
+    title: Joi.string().min(1).max(100).required(),
+    artist: Joi.string().min(1).max(100).required(),
+    releaseYear: Joi.number().min(1900).max(new Date().getFullYear()).required(),
+});
 
 export const checkAdmin = async (req, res, next) => {
     res.status(200).json({ admin: true });
@@ -21,23 +36,36 @@ const uploadToCloudinary = async (file) => {
 
 export const createSong = async (req, res, next) => {
     try {
-        if (!req.files || !req.files.audioFile || !req.files.imageFile) {
-            return res.status(400).json({ message: "Please upload all files" });
-        }
+        const { error } = songSchema.validate(req.body);
 
-        const { title, artist, albumId, duration } = req.body;
-        const audioFile = req.files.audioFile;
-        const imageFile = req.files.imageFile;
+        let albumId = req.body.albumId?.trim();
+        if (albumId && !mongoose.Types.ObjectId.isValid(albumId)) {
+            return res.status(400).json({ message: "Invalid album ID format" });
+        };
+
+        if (!req.files?.audioFile || !req.files?.imageFile) {
+            return res.status(400).json({ message: "Please upload both audio and image files." });
+        };
+
+        const { audioFile, imageFile } = req.files;
+
+        if (!audioFile.mimetype.startsWith("audio/")) {
+            return res.status(400).json({ message: "Audio file must be of audio type." });
+        };
+
+        if (!imageFile.mimetype.startsWith("image/")) {
+            return res.status(400).json({ message: "Image file must be of image type." });
+        };
 
         const audioUrl = await uploadToCloudinary(audioFile);
         const imageUrl = await uploadToCloudinary(imageFile);
 
         const song = new Song({
-            title,
-            artist,
+            title: req.body.title,
+            artist: req.body.artist,
             audioUrl,
             imageUrl,
-            duration,
+            duration: req.body.duration,
             albumId: albumId || null,
         });
 
@@ -47,12 +75,11 @@ export const createSong = async (req, res, next) => {
             await Album.findByIdAndUpdate(albumId, {
                 $push: { songs: song },
             });
-        }
+        };
 
         res.status(201).json(song);
     } catch (error) {
         logger.error("Error in createSong", error);
-        res.status(500).json({ message: "Internal server error", error });
         next(error);
     }
 };
@@ -78,15 +105,28 @@ export const deleteSong = async (req, res, next) => {
 
 export const createAlbum = async (req, res, next) => {
     try {
-        const { title, artist, releaseYear } = req.body;
-        const { imageFile } = req.files;
+        const { error } = albumSchema.validate(req.body);
+
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        };
+
+        if (!req.files?.imageFile) {
+            return res.status(400).json({ message: "Image file is required." });
+        }
+
+        const imageFile = req.files.imageFile;
+
+        if (!imageFile.mimetype.startsWith("image/")) {
+            return res.status(400).json({ message: "Uploaded file must be an image." });
+        }
 
         const imageUrl = await uploadToCloudinary(imageFile);
         const album = new Album({
-            title,
-            artist,
+            title: req.body.title,
+            artist: req.body.artist,
             imageUrl,
-            releaseYear,
+            releaseYear: req.body.releaseYear,
         });
 
         await album.save();
