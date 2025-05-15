@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Library } from "lucide-react";
 import AlbumsTable from "./AlbumsTable";
 import AddAlbumDialog from "./AddAlbumDialog";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const AlbumsTabContent = () => {
     return (
@@ -20,7 +21,9 @@ const AlbumsTabContent = () => {
             </CardHeader>
 
             <CardContent>
-                <AlbumsTable />
+                <ErrorBoundary fallback={<div className="text-red-500">Could not load albums.</div>}>
+                    <AlbumsTable />
+                </ErrorBoundary>
             </CardContent>
         </Card>
     );
