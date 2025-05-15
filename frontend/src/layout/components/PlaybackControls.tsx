@@ -12,7 +12,7 @@ const formatTime = (seconds: number) => {
 
 const PlaybackControls = () => {
     const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering } = usePlayerStore();
-
+    const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(() => {
         const storedVolume = localStorage.getItem("player_volume");
         return storedVolume ? Number(storedVolume) : 75;
@@ -53,10 +53,21 @@ const PlaybackControls = () => {
         localStorage.setItem("player_volume", String(volume));
     }, [volume]);
 
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = isMuted ? 0 : volume / 100;
+        }
+        localStorage.setItem("player_volume", String(volume));
+    }, [volume, isMuted]);
+
     const handleSeek = (value: number[]) => {
         if (audioRef.current) {
             audioRef.current.currentTime = value[0];
         }
+    };
+
+    const toggleMute = () => {
+        setIsMuted((prev) => !prev);
     };
 
     return (
@@ -157,23 +168,34 @@ const PlaybackControls = () => {
                         <Laptop2 className='h-4 w-4' />
                     </Button>
 
-                    <div className='flex items-center gap-2'>
-                        <Button size='icon' variant='ghost' className='hover:text-white text-zinc-400'>
-                            <Volume1 className='h-4 w-4' />
+                    <div className="relative group flex items-center gap-2">
+                        <Button size='icon' variant='ghost' className='hover:text-white text-zinc-400' onClick={toggleMute}>
+                            {isMuted || volume === 0 ? (
+                                <Volume1 className="h-4 w-4 text-red-400" />
+                            ) : (
+                                <Volume1 className="h-4 w-4" />
+                            )}
                         </Button>
 
-                        <Slider
-                            value={[volume]}
-                            max={100}
-                            step={1}
-                            className='w-24 hover:cursor-grab active:cursor-grabbing'
-                            onValueChange={(value) => {
-                                setVolume(value[0]);
-                                if (audioRef.current) {
-                                    audioRef.current.volume = value[0] / 100;
-                                }
-                            }}
-                        />
+                        <div
+                            className="w-0 overflow-hidden group-hover:w-24 transition-all duration-300 ease-in-out"
+                        >
+                            <Slider
+                                value={[isMuted ? 0 : volume]}
+                                max={100}
+                                step={1}
+                                className="w-full hover:cursor-grab active:cursor-grabbing"
+                                onValueChange={(value) => {
+                                    const newVolume = value[0];
+                                    setVolume(newVolume);
+                                    if (newVolume === 0) {
+                                        setIsMuted(true);
+                                    } else {
+                                        setIsMuted(false);
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
