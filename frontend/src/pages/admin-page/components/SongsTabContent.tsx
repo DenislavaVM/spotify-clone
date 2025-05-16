@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Music } from "lucide-react";
 import SongsTable from "./SongsTable";
 import AddSongDialog from "./AddSongDialog";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const SongsTabContent = () => {
     return (
@@ -19,7 +20,9 @@ const SongsTabContent = () => {
                 </div>
             </CardHeader>
             <CardContent>
-                <SongsTable />
+                <ErrorBoundary fallback={<div className="text-red-500">Could not load songs.</div>}>
+                    <SongsTable />
+                </ErrorBoundary>
             </CardContent>
         </Card>
     );
