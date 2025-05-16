@@ -3,17 +3,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatUsersStore } from "@/stores/useChatUsersStore";
 import { useUser } from "@clerk/clerk-react";
 import { HeadphonesIcon, Music, Users } from "lucide-react";
-import { useEffect } from "react";
+import debounce from "lodash/debounce";
+import { useRef, useEffect } from "react";
 
 const FriendsActivity = () => {
     const { users, fetchUsers, onlineUsers, userActivities } = useChatUsersStore();
     const { user } = useUser();
+    const debouncedFetchUsers = useRef(debounce(fetchUsers, 500)).current;
 
     useEffect(() => {
         if (user) {
-            fetchUsers();
+            debouncedFetchUsers();
         }
-    }, [fetchUsers, user]);
+    }, [debouncedFetchUsers, user]);
 
     return (
         <div className="h-full bg-zinc-900 rounded-lg flex flex-col">

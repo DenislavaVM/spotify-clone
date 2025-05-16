@@ -2,7 +2,8 @@ import { useMessagesStore } from "@/stores/useMessagesStore";
 import { useChatUsersStore } from "@/stores/useChatUsersStore";
 import { useSelectedUserStore } from "@/stores/useSelectedUserStore";
 import { useUser } from "@clerk/clerk-react";
-import { useEffect } from "react";
+import debounce from "lodash/debounce";
+import { useRef, useEffect } from "react";
 import UserList from "./components/UserList";
 import Topbar from "@/components/Topbar";
 import ChatHeader from "./components/ChatHeader";
@@ -23,12 +24,13 @@ const ChatPage = () => {
     const { fetchUsers } = useChatUsersStore();
     const { messages, fetchMessages } = useMessagesStore();
     const { selectedUser } = useSelectedUserStore();
+    const debouncedFetchUsers = useRef(debounce(fetchUsers, 500)).current;
 
     useEffect(() => {
         if (user) {
-            fetchUsers();
+            debouncedFetchUsers();
         };
-    }, [fetchUsers, user]);
+    }, [debouncedFetchUsers, user]);
 
     useEffect(() => {
         if (selectedUser) {
