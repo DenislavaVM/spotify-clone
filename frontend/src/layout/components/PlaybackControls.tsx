@@ -11,7 +11,7 @@ const formatTime = (seconds: number) => {
 };
 
 const PlaybackControls = () => {
-    const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering } = usePlayerStore();
+    const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isBuffering, isShuffle, isRepeat, toggleShuffle, toggleRepeat } = usePlayerStore();
     const [isMuted, setIsMuted] = useState(() => {
         const storedMuted = localStorage.getItem("player_muted");
         return storedMuted ? storedMuted === "true" : false;
@@ -37,7 +37,7 @@ const PlaybackControls = () => {
         audio.addEventListener("loadedmetadata", updateDuration);
 
         const handleEnded = () => {
-            usePlayerStore.setState({ isPlaying: false });
+            usePlayerStore.getState().playNext();
         };
 
         audio.addEventListener("ended", handleEnded);
@@ -105,7 +105,8 @@ const PlaybackControls = () => {
                         <Button
                             size='icon'
                             variant='ghost'
-                            className='hidden sm:inline-flex hover:text-white text-zinc-400'
+                            className={`hidden sm:inline-flex hover:text-white ${isShuffle ? 'text-white' : 'text-zinc-400'}`}
+                            onClick={toggleShuffle}
                         >
                             <Shuffle className='h-4 w-4' />
                         </Button>
@@ -146,7 +147,8 @@ const PlaybackControls = () => {
                         <Button
                             size='icon'
                             variant='ghost'
-                            className='hidden sm:inline-flex hover:text-white text-zinc-400'
+                            className={`hidden sm:inline-flex hover:text-white ${isRepeat ? 'text-white' : 'text-zinc-400'}`}
+                            onClick={toggleRepeat}
                         >
                             <Repeat className='h-4 w-4' />
                         </Button>

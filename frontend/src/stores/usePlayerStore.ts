@@ -8,6 +8,8 @@ interface PlayerStore {
     queue: Song[];
     currentIndex: number;
     isBuffering: boolean;
+    isShuffle: boolean;
+    isRepeat: boolean;
 
     initializeQueue: (songs: Song[]) => void;
     playAlbum: (songs: Song[], startIndex?: number) => void;
@@ -15,7 +17,17 @@ interface PlayerStore {
     togglePlay: () => void;
     playNext: () => void;
     playPrevious: () => void;
+    toggleShuffle: () => void;
+    toggleRepeat: () => void;
     setIsBuffering: (value: boolean) => void;
+};
+
+const getStoredBool = (key: string, fallback = false) => {
+    if (typeof window !== "undefined") {
+        const val = localStorage.getItem(key);
+        return val === "true" ? true : fallback;
+    }
+    return fallback;
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -24,7 +36,24 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     queue: [],
     currentIndex: -1,
     isBuffering: false,
+    isShuffle: getStoredBool("player_shuffle"),
+    isRepeat: getStoredBool("player_repeat"),
     setIsBuffering: (value) => set({ isBuffering: value }),
+    toggleShuffle: () => {
+        set((state) => {
+            const newVal = !state.isShuffle;
+            localStorage.setItem("player_shuffle", String(newVal));
+            return { isShuffle: newVal };
+        });
+    },
+
+    toggleRepeat: () => {
+        set((state) => {
+            const newVal = !state.isRepeat;
+            localStorage.setItem("player_repeat", String(newVal));
+            return { isRepeat: newVal };
+        });
+    },
 
     initializeQueue: (songs: Song[]) => {
         set({
@@ -77,7 +106,39 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     },
 
     playNext: () => {
-        const { currentIndex, queue } = get();
+        const { currentIndex, queue, isShuffle, isRepeat } = get();
+
+        if (isRepeat) {
+            const currentSong = queue[currentIndex];
+            trackActivity(currentSong);
+            setTimeout(() => {
+                const audio = document.querySelector("audio") as HTMLAudioElement;
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play();
+                };
+            }, 0);
+            return;
+        };
+
+        if (isShuffle) {
+            let randomIndex = Math.floor(Math.random() * queue.length);
+            if (queue.length > 1) {
+                while (randomIndex === currentIndex) {
+                    randomIndex = Math.floor(Math.random() * queue.length);
+                };
+            };
+
+            const randomSong = queue[randomIndex];
+            trackActivity(randomSong);
+            set({
+                currentSong: randomSong,
+                currentIndex: randomIndex,
+                isPlaying: true,
+            });
+            return;
+        };
+
         const nextIndex = currentIndex + 1;
 
         if (nextIndex < queue.length) {
@@ -96,7 +157,27 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     },
 
     playPrevious: () => {
-        const { currentIndex, queue } = get();
+        const { currentIndex, queue, isShuffle } = get();
+
+        if (isShuffle) {
+            let randomIndex = Math.floor(Math.random() * queue.length);
+
+            if (queue.length > 1) {
+                while (randomIndex === currentIndex) {
+                    randomIndex = Math.floor(Math.random() * queue.length);
+                };
+            };
+
+            const randomSong = queue[randomIndex];
+            trackActivity(randomSong);
+            set({
+                currentSong: randomSong,
+                currentIndex: randomIndex,
+                isPlaying: true,
+            });
+            return;
+        };
+
         const prevIndex = currentIndex - 1
 
         if (prevIndex >= 0) {
