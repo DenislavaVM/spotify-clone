@@ -1,13 +1,14 @@
 import { Song } from "@/types";
-import { useChatStore } from "@/stores/useChatStore";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 export const trackActivity = (song: Song | null, isIdle: boolean = false) => {
-    const socket = useChatStore.getState().socket;
+    const socket = useSocketStore.getState().socket;
 
-    if (!socket?.auth?.userId) return;
+    const userId = (socket.auth as { userId?: string })?.userId;
+    if (!userId) return;
 
     socket.emit("update_activity", {
-        userId: socket.auth.userId,
+        userId,
         activity: isIdle || !song
             ? "Idle"
             : `Playing ${song.title} by ${song.artist}`,

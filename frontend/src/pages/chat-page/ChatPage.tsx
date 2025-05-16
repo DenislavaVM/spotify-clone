@@ -1,4 +1,6 @@
-import { useChatStore } from "@/stores/useChatStore";
+import { useMessagesStore } from "@/stores/useMessagesStore";
+import { useChatUsersStore } from "@/stores/useChatUsersStore";
+import { useSelectedUserStore } from "@/stores/useSelectedUserStore";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import UserList from "./components/UserList";
@@ -18,7 +20,9 @@ const formatTime = (data: string) => {
 
 const ChatPage = () => {
     const { user } = useUser();
-    const { messages, selectedUser, fetchUsers, fetchMessages } = useChatStore();
+    const { fetchUsers } = useChatUsersStore();
+    const { messages, fetchMessages } = useMessagesStore();
+    const { selectedUser } = useSelectedUserStore();
 
     useEffect(() => {
         if (user) {

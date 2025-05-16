@@ -1,9 +1,9 @@
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useStatsStore } from "@/stores/useStatsStore";
 import { Library, ListMusic, PlayCircle, Users2 } from "lucide-react";
 import StatsCard from "./StatsCard";
 
 const DashboardStats = () => {
-    const { stats } = useMusicStore();
+    const { stats } = useStatsStore();
 
     if (!stats || Object.values(stats).some((v) => v === undefined || v === null)) {
         return null;

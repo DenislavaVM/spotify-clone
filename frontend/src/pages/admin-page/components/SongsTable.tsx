@@ -1,10 +1,10 @@
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useSongStore } from "@/stores/useSongStore";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SongsTable = () => {
-    const { songs, isLoading, error, deleteSong } = useMusicStore();
+    const { songs, isLoading, error, deleteSong } = useSongStore();
 
     if (isLoading) {
         return (

@@ -1,10 +1,12 @@
 import UsersListSkeleton from "@/components/skeletons/UserListSkeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChatStore } from "@/stores/useChatStore";
+import { useChatUsersStore } from "@/stores/useChatUsersStore";
+import { useSelectedUserStore } from "@/stores/useSelectedUserStore";
 
 const UsersList = () => {
-	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
+	const { users, isLoading, onlineUsers } = useChatUsersStore();
+	const { selectedUser, setSelectedUser } = useSelectedUserStore();
 
 	return (
 		<div className='border-r border-zinc-800'>

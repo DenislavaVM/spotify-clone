@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { Song } from "@/types";
 import { trackActivity } from "@/lib/trackActivity";
-import { useChatStore } from "./useChatStore";
 
 interface PlayerStore {
     currentSong: Song | null;

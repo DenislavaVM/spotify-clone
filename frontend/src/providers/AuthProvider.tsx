@@ -3,7 +3,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useChatStore } from "@/stores/useChatStore";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 const updateApiToken = (token: string | null) => {
     if (token) {
@@ -18,7 +18,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { getToken, userId } = useAuth();
     const [loading, setLoading] = useState(true);
     const { checkAdminStatus } = useAuthStore();
-    const { initSocket, disconnectSocket } = useChatStore();
+    const { initSocket, disconnectSocket } = useSocketStore();
 
     useEffect(() => {
         const initAuth = async () => {

@@ -1,5 +1,5 @@
 import Topbar from "@/components/Topbar";
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useDiscoverStore } from "@/stores/useDiscoverStore";
 import { useEffect } from "react";
 import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,7 +15,7 @@ const HomePage = () => {
     madeForYouSongs,
     featuredSongs,
     trendingSongs,
-  } = useMusicStore();
+  } = useDiscoverStore();
 
   const { initializeQueue } = usePlayerStore();
 

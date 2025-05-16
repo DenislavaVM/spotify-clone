@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useAlbumStore } from "@/stores/useAlbumStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 
 import AlbumHeader from "./components/AlbumHeader";
@@ -10,7 +10,7 @@ import TrackList from "./components/TrackList";
 
 const AlbumPage = () => {
     const { albumId } = useParams();
-    const { fetchAlbumById, currentAlbum, isLoading } = useMusicStore();
+    const { fetchAlbumById, currentAlbum, isLoading } = useAlbumStore();
     const { currentSong, isPlaying, playAlbum, togglePlay } = usePlayerStore();
 
     useEffect(() => {

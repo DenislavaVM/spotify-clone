@@ -1,8 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useChatStore } from "@/stores/useChatStore";
+import { useSelectedUserStore } from "@/stores/useSelectedUserStore";
+import { useChatUsersStore } from "@/stores/useChatUsersStore";
 
 const ChatHeader = () => {
-    const { selectedUser, onlineUsers } = useChatStore();
+    const { selectedUser } = useSelectedUserStore();
+    const { onlineUsers } = useChatUsersStore();
 
     if (!selectedUser) {
         return null;
