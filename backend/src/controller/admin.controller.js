@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import cloudinary from "../lib/cloudinary.js";
 import logger from "../lib/logger.js";
+import { AppError } from "../lib/customError.js";
 import Joi from "joi";
 import { Album } from "../models/album.model.js";
 import { Song } from "../models/song.model.js";
@@ -44,7 +45,7 @@ export const createSong = async (req, res, next) => {
         };
 
         if (!req.files?.audioFile || !req.files?.imageFile) {
-            return res.status(400).json({ message: "Please upload both audio and image files." });
+            return next(new AppError("Please upload both audio and image files.", 400));
         };
 
         const { audioFile, imageFile } = req.files;

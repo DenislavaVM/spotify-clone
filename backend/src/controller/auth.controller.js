@@ -16,6 +16,7 @@ export const authCallback = async (req, res, next) => {
         res.status(200).json({ success: true });
     } catch (error) {
         logger.error("Error in auth callback", error);
+        error.statusCode = 500;
         next(error);
     }
 };
