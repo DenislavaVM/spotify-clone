@@ -12,7 +12,7 @@ interface MessagesStore {
     addMessage: (message: Message) => void;
 }
 
-export const useMessagesStore = create<MessagesStore>((set, get) => ({
+export const useMessagesStore = create<MessagesStore>((set) => ({
     messages: [],
     isLoading: false,
     error: null,

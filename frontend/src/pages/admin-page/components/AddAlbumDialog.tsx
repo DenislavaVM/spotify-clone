@@ -9,7 +9,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { axiosInstance } from "@/lib/axios";
 import { apiPost } from "@/lib/api";
 import { Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
