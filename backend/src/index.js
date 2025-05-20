@@ -31,11 +31,18 @@ const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 app.use(cors({
-    origin: [
-        "http://localhost:3000",
-        "https://spotify-clone-orcin-psi.vercel.app",
-        "https://spotify-clone-8wy9ei7rj-denislavas-projects.vercel.app"
-    ],
+    origin: function (origin, callback) {
+        const allowedOrigins = [
+            "http://localhost:3000",
+            "https://spotify-clone-orcin-psi.vercel.app",
+        ];
+
+        if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
 }));
 
