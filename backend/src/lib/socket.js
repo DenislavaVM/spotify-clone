@@ -1,14 +1,15 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import logger from "./logger.js";
 import { Server } from "socket.io";
 import { Message } from "../models/message.model.js";
 
 export const initializeSocket = (server) => {
+    const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(",") || [];
     const io = new Server(server, {
         cors: {
-            origin: [
-                "http://localhost:3000",
-                "https://spotify-clone-orcin-psi.vercel.app"
-            ],
+            origin: allowedOrigins,
             credentials: true,
         },
     });
