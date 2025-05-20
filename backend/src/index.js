@@ -28,12 +28,21 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-app.use(cors(
-    {
-        origin: "http://localhost:3000",
-        credentials: true,
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://spotify-clone-orcin-psi.vercel.app"
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
     },
-));
+    credentials: true,
+}));
 
 app.use(express.json());
 app.use(clerkMiddleware());
@@ -79,6 +88,10 @@ app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
 app.use(errorHandler);
+
+app.get("/", (req, res) => {
+    res.send("Spotify Clone API is running.");
+});
 
 httpServer.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
