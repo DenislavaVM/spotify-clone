@@ -30,21 +30,21 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-app.use(cors({
+const ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://spotify-clone-2j8a.onrender.com",
+];
+const corsOptions = {
     origin: function (origin, callback) {
-        const allowedOrigins = [
-            "http://localhost:3000",
-            "https://spotify-clone-orcin-psi.vercel.app",
-        ];
-
-        if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
+        if (!origin || ALLOWED_ORIGINS.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error("Not allowed by CORS"));
         }
     },
     credentials: true,
-}));
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(clerkMiddleware());
