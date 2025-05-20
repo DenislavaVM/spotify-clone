@@ -4,8 +4,10 @@ import { Message } from "@/types";
 import { useChatUsersStore } from "./useChatUsersStore";
 import { useMessagesStore } from "./useMessagesStore";
 
-const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
-const socket = io(baseURL, { autoConnect: false, withCredentials: true });
+const socket = io(import.meta.env.VITE_BACKEND_URL, {
+    autoConnect: false,
+    withCredentials: true,
+});
 
 interface SocketStore {
     socket: typeof socket;
@@ -23,7 +25,10 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
 
         socket.auth = { userId };
         socket.connect();
-        socket.emit("user_connected", userId);
+
+        socket.on("connect", () => {
+            socket.emit("user_connected", userId);
+        });
 
         const { setOnlineUsers, setUserActivities, updateUserActivity } = useChatUsersStore.getState();
         const { addMessage } = useMessagesStore.getState();
