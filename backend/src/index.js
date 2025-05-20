@@ -30,10 +30,8 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-const ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://spotify-clone-2j8a.onrender.com",
-];
+const ALLOWED_ORIGINS = process.env.CORS_ALLOWED_ORIGINS?.split(",") || [];
+
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || ALLOWED_ORIGINS.includes(origin)) {
