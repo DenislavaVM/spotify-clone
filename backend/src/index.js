@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
 import fileupload from "express-fileupload";
+import { fileURLToPath } from "url";
 import path from "path";
 import cors from "cors";
 import fs from "fs";
@@ -21,26 +22,19 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import logger from "./lib/logger.js";
 
 dotenv.config();
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT;
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-const allowedOrigins = [
-    "http://localhost:3000",
-    "https://spotify-clone-orcin-psi.vercel.app"
-];
-
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
+    origin: [
+        "http://localhost:3000",
+        "https://spotify-clone-orcin-psi.vercel.app"
+    ],
     credentials: true,
 }));
 
