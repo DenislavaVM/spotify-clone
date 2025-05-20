@@ -33,7 +33,8 @@ initializeSocket(httpServer);
 app.use(cors({
     origin: [
         "http://localhost:3000",
-        "https://spotify-clone-orcin-psi.vercel.app"
+        "https://spotify-clone-orcin-psi.vercel.app",
+        "https://spotify-clone-8wy9ei7rj-denislavas-projects.vercel.app"
     ],
     credentials: true,
 }));
