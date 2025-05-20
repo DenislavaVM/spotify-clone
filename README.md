@@ -1,6 +1,6 @@
 # 🎵 Spotify Clone – Fullstack Music Streaming App
 
-[![Vercel Deploy](https://vercelbadge.vercel.app/api/DenislavaVM/spotify-clone)](https://spotify-clone-black-theta.vercel.app)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel&style=flat-square)](https://spotify-clone-black-theta.vercel.app)
 [![Backend on Render](https://img.shields.io/badge/Backend-Render-blue?style=flat-square)](https://spotify-clone-2j8a.onrender.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](#-license)
 
