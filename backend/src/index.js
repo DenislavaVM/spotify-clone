@@ -78,13 +78,6 @@ app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
-if (process.env.NODE_ENV === "production") {
-    const frontendPath = path.join(__dirname, "../../frontend/dist");
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "..", "frontend", "dist", "index.html"));
-    });
-};
-
 app.use(errorHandler);
 
 httpServer.listen(PORT, () => {
